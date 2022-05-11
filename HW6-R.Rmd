@@ -1,0 +1,108 @@
+---
+title: "HW6"
+author: "Christopher Halim"
+date: "4/2/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Number 1
+```{r}
+data <- read.csv("/Users/christopherhalim888/Downloads/Track_Records.csv")
+data_num <- data[,2:8]
+library(dplyr)
+data_num
+
+## a
+# Calculate Sample Covariance Matrix
+R <- cor(data_num); R;
+
+G.R <- eigen(R)$vectors
+round(G.R,6)
+
+L.R <- diag(eigen(R)$values)
+round(L.R,6)
+
+## b 
+diag(L.R)/sum(diag(L.R))
+cumsum(diag(L.R)) / sum(diag(L.R))
+
+plot(diag(L.R), type="b", main="Scree plot for PCA of Track_Records data")
+
+pc <- prcomp(data_num, scale = TRUE, center = TRUE)
+
+pc1 <- pc[[2]][1:7]
+pc1
+pc2 <- pc[[2]][8:14]
+pc2
+pc.frame <- as.data.frame(rbind(pc1, pc2), row.names = c("PC1", "PC2"))
+names(pc.frame) <- names(data_num)
+
+## c Interpretation
+
+
+## d 
+rankings <- scale(as.matrix(data_num), center = pc$center, scale = pc$scale) %*% pc1
+countries <- data$Country
+data.rank.pc1 <- data.frame(country = countries, rank = rankings)
+
+## e
+rankings1 <- scale(as.matrix(data_num), center = pc$center, scale = pc$scale) %*% pc2
+countries1 <- data.rank.pc1$country
+data.rank.pc2 <- data.frame(country = countries1, rank = rankings1)
+
+plot(x = data.rank.pc1$rank, y = data.rank.pc2$rank, xlab = "PC1", ylab = "PC2")
+text(data.rank.pc1$rank, data.rank.pc2$rank, data.rank.pc1$country, cex=0.5, pos=4, col="blue")
+
+
+```
+
+Number 2
+```{r}
+## a
+data <- read.csv("/Users/christopherhalim888/Downloads/Track_Records.csv")
+data_num <- data[,2:8]
+
+data.meters <- data.frame(country = data$Country, m100 = 100/data$x1, 
+    m200 = 200/data$x2, m400 = 400/data$x3, m800 = 800/(60 * data$x4), 
+    m1500 = 1500/(60 * data$x5), m3000 = 3000/(60 * data$x6), mar = 42195/(60 *     data$x7))
+data.meters_num <- data.meters[,2:8]
+data.meters_num
+
+## b
+S <- cov(data.meters_num); S;
+eigen(S)
+
+G <- eigen(S)$vectors
+G
+
+## c Interpretation
+
+
+## d
+pc <- prcomp(data.meters_num, scale = TRUE, center = TRUE)
+
+pc1 <- pc[[2]][1:7]
+pc1
+pc2 <- pc[[2]][8:14]
+pc2
+pc.frame <- as.data.frame(rbind(pc1, pc2), row.names = c("PC1", "PC2"))
+names(pc.frame) <- names(data.meters_num)
+
+rankings <- scale(as.matrix(data.meters_num), center = pc$center, scale = pc$scale) %*% pc1
+countries <- data.meters$country
+data.meters.rank.pc1 <- data.frame(country = countries, rank = rankings)
+
+## e
+rankings1 <- scale(as.matrix(data.meters_num), center = pc$center, scale = pc$scale) %*% pc2
+countries1 <- data.meters$country
+data.meters.rank.pc2 <- data.frame(country = countries1, rank = rankings1)
+
+plot(x = data.meters.rank.pc1$rank, y = data.meters.rank.pc2$rank,xlab = "PC1", ylab = "PC2")
+text(data.meters.rank.pc1$rank, data.meters.rank.pc2$rank, data.meters.rank.pc1$country, cex=0.5, pos=4, col="blue")
+
+
+```

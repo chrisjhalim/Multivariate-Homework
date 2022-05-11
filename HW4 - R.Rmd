@@ -1,0 +1,137 @@
+---
+title: "HW4-R"
+author: "Christopher Halim"
+date: "2/28/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Question 2
+```{r}
+college <- read.csv("/Users/christopherhalim888/Downloads/College (1).csv")
+college
+
+dim(college); names(college)
+
+X <- as.matrix(college)
+rownames(X) <- rownames(college)
+head(X)
+
+mu0 <- c(525,50,25)
+
+n <- nrow(X); p <- ncol(X); n; p;
+
+xbar <- colMeans(X); xbar;
+
+S.u <- cov(X); S.u;
+
+S.m <- (n-1)/n * S.u
+
+T2 <- n * sum( (xbar - mu0) %*% solve(S.u) %*% (xbar - mu0) )
+T2
+
+1 - pf((n-p)/((n-1)*p) * T2, df1=p, df2=n-p)
+
+```
+
+Question 3
+```{r}
+df <- read.csv("/Users/christopherhalim888/Downloads/Birds.csv")
+df
+bird <- as.matrix(df)
+bird
+
+#a
+rownames(bird) <- rownames(df)
+head(bird)
+
+xbar <- colMeans(bird)
+xbar
+
+library(ellipse)
+# Confidence ellipse for means (mu1, mu2)
+size <- sqrt(2/(n-2) * qf(.95, 2, n-2)) # p=2 for two variables
+plot(ellipse(x=S.m[1:2,1:2], centre=xbar[1:2], t=size), type="l", lwd=2, xlab="mu1", ylab="mu2", main="95% confidence ellipse for (mu1, mu2)")
+points(x=193.6222, y=279.7779, cex=1.5, pch=8, col="red")
+
+
+#b
+
+# Confidence Intervals for mu1
+t.test(bird[,1])
+
+# Confidence Intervals for mu2
+t.test(bird[,-1])
+
+#c
+
+
+
+```
+
+Question 4
+```{r}
+df2 <- read.csv("/Users/christopherhalim888/Downloads/Number_Parity.csv")
+df2
+
+X <- as.matrix(df2)
+
+xbar <- colMeans(X); xbar;
+
+S.u <- cov(X); S.u;
+
+c1 <- c(-1, 1, -1, 1)
+c2 <- c(-1, -1, 1, 1)
+c3 <- c(-1, 1, 1, -1)
+C <- rbind(c1, c2, c3); C;
+
+n <- nrow(X)
+p <- ncol(X)
+n;p
+
+C.xbar <- as.vector(C %*% xbar); C.xbar;
+
+T2 <- n * as.numeric( t(C.xbar) %*% solve(C %*% S.u %*% t(C)) %*% C.xbar )
+T2
+
+1 - pf((n-p+1)/((n-1)*(p-1))*T2, df1=p-1, df2=n-p+1)
+
+b1 <- c1; b2 <- c2; b3 <- c3;
+S.m <- (n-1)/n * S.u
+F.mult <- sqrt( (p-1)/(n-p+1) * qf(.95,p-1,n-p+1) )
+sum(b1*xbar) + c(-1,1) * F.mult * as.numeric(sqrt(t(b1) %*% S.m %*% b1))
+sum(b2*xbar) + c(-1,1) * F.mult * as.numeric(sqrt(t(b2) %*% S.m %*% b2))
+sum(b3*xbar) + c(-1,1) * F.mult * as.numeric(sqrt(t(b3) %*% S.m %*% b3))
+
+```
+
+Question 5
+```{r}
+df3 <- read.csv("/Users/christopherhalim888/Downloads/Turtles.csv")
+df3 <- df3[,1:3]
+
+#a
+X <- df3; rm(df3);
+
+male <- X[1:24,]; female <- X[25:48,];
+male
+n1 <- nrow(male); n2 <- nrow(female); p <- ncol(female);
+rownames(male) <- 1:n1; rownames(female) <- 1:n2;
+
+xbar1 <- colMeans(male); xbar2 <- colMeans(female);
+S1 <- cov(female); S2 <- cov(male);
+S <- 1/(n1 + n2 - 2) * ( (n1-1)*S1 + (n2-1)*S2 )
+T2 <- 1/(1/n1 + 1/n2) * as.numeric( t(xbar1 - xbar2) %*% solve(S) %*% (xbar1 - xbar2) )
+T2
+
+1 - pf((n1+n2-p-1) / (p*(n1+n2-2)) * T2, df1=p, df2=n1+n2-p-1)
+
+#b 
+t.test(male$x1,female$x1)
+t.test(male$x2,female$x2)
+t.test(male$x2,female$x2)
+
+```

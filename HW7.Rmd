@@ -1,0 +1,102 @@
+---
+title: "HW7"
+author: "Christopher Halim"
+date: "4/14/2022"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Problem 1
+```{r}
+rm(list=ls())
+## a
+mat1.data <- c(1.0000,0.4919,0.2636,0.4653,0.4919,1.0000,0.3127,0.3506,0.2636,0.3127,1.0000,0.4108,0.4653,0.3506,0.4108,1.0000)
+mat1 <- matrix(mat1.data,nrow = 4, ncol = 4, byrow = TRUE)
+mat1
+
+sp <- eigen(mat1); sp;
+
+Gamma <- sp$vectors; Lambda <- diag(sp$values);
+
+Gamma %*% Lambda %*% t(Gamma) 
+
+Q.hat <- ( Gamma %*% sqrt(Lambda) )[,1]; Q.hat;
+Q.hat %*% t(Q.hat)
+
+Psi.hat <- diag(diag(mat1 - Q.hat %*% t(Q.hat)))
+Psi.hat
+
+mat1 - (Q.hat %*% t(Q.hat) + Psi.hat)
+
+## b
+factanal(factors=1, covmat = mat1)
+
+## c
+Gamma <- sp$vectors; Lambda <- diag(sp$values);
+Q.hat <- (Gamma %*% sqrt(Lambda))[,1:2]; Q.hat;
+
+varimax(Q.hat)
+
+acos(.7824503) * 180 / pi
+asin(.6227130) * 180 / pi
+
+```
+
+Problem 2
+```{r}
+rm(list=ls())
+data <- read.csv("/Users/christopherhalim888/Downloads/AirPollution.csv")
+data
+
+## a
+R <- cor(data); R;
+
+sp <- eigen(R); sp;
+
+Gamma <- sp$vectors; Lambda <- diag(sp$values);
+
+Gamma %*% Lambda %*% t(Gamma) 
+
+Q.hat <- ( Gamma %*% sqrt(Lambda) )[,1]; Q.hat;
+Q.hat %*% t(Q.hat)
+
+Psi.hat <- diag(diag(R - Q.hat %*% t(Q.hat)))
+Psi.hat
+
+R - (Q.hat %*% t(Q.hat) + Psi.hat)
+
+## b
+dim(data)
+names(data)
+factanal(~x1+x2+x3+x4, data=data, factors=1, rotation="none")
+
+## c
+q <- as.matrix(c(0.324,0.410,0.232,0.771))
+q
+v <- diag(c(0.895,0.832,0.946,0.405))
+v
+
+
+corr <- (q %*% t(q)) + v
+corr
+
+## d
+Q.hat <- ( Gamma %*% sqrt(Lambda) )[,1:2]; Q.hat;
+Q.hat %*% t(Q.hat)
+
+Psi.hat <- diag(diag(R - Q.hat %*% t(Q.hat)))
+Psi.hat
+
+R - (Q.hat %*% t(Q.hat) + Psi.hat)
+
+varimax(Q.hat)
+
+acos(.8085335) * 180 / pi
+asin(.5884501) * 180 / pi
+
+```

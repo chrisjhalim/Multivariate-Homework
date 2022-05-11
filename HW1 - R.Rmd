@@ -1,0 +1,92 @@
+---
+title: "HW1 - R"
+author: "Christopher Halim"
+date: "1/30/2022"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 4
+# A
+```{r}
+df <- read.csv("/Users/christopherhalim888/Downloads/MS_Data.csv")
+head(df)
+
+pairs(df)
+```
+There is minimal correlation between X3 and X4 looking by the scatterplot matrx.
+
+# B
+```{r}
+colMeans(df)
+
+round(cov(df),4)
+
+round(cor(df),4)
+```
+
+# C Matrix Algebra
+```{r}
+# Sample Mean
+X <- as.matrix(df)
+colMeans(X) # Option 1
+
+n <- nrow(X)
+ones <- rep(1,n)
+sample_mean <- (1/n) * t(X) %*% ones # Option 2: Same Result
+
+# Sample Covariance
+I.n <- diag(n)
+Ones <- matrix(rep(1,n*n),n,n)
+S <- 1/(n-1) * t(X) %*% (I.n - (1/n) * Ones) %*% X
+round(S,4)
+
+# Sample Correlation
+D.inv.root <- diag(1/sqrt(diag(S)))
+D.inv.root %*% S %*% D.inv.root
+```
+
+## Question 5
+# A
+```{r}
+data <- read.csv("/Users/christopherhalim888/Downloads/Non_MS.csv")
+head(data)
+
+# i
+yi1 <- c(0,1,0,1,0)
+yi2 <- c(0,0,1,0,1)
+A <- rbind(yi1,yi2)
+
+X <- as.matrix(data)
+
+A %*% X[1,]
+
+Y <- X %*% t(A)
+
+# ii
+x.bar <- colMeans(X)
+A %*% x.bar
+
+# iii
+S <- cov(X)
+A %*% S %*% t(A)
+
+cov(Y)
+```
+
+# B
+```{r}
+# i
+data_m <- as.matrix(data[,-1])
+
+S1 <- cov(data_m)
+spec <- eigen(S1)
+sqrt(spec$values)
+
+# ii
+x.bar <- colMeans(data_m)
+Z <- (data_m - x.bar) * (1/sqrt(spec$values))
+```
